@@ -1,17 +1,20 @@
 // src/app/services/hamburger.service.ts
 import { Injectable } from '@angular/core';
 import { BreadModel, HamburgerModel, IngredientModel } from '@model/hamburger.model';
+//import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class HamburgerService {
   private hamburgers: HamburgerModel[] = [];
   private ingredients: IngredientModel[] = [];
   private breads: BreadModel[] = [];
+  //private apiUrl = 'https://inscripciones.cl:4000/hamburgers';
 
-  constructor() {
-    // Initialize with some sample data
+  constructor(
+    //private http: HttpClient
+  ) {
     this.hamburgers = [
       {
         id: 1, title: 'Cheeseburger', availableFrom: new Date('2023-01-01'),
@@ -46,20 +49,28 @@ export class HamburgerService {
       { code: 'garlic', label: 'Pan de Ajo' },
       { code: 'burger', label: 'Pan de Hamburguesa' },
     ];
-    
-
   }
-
+/*
+  getHamburgersFromServer(): Promise<any> {
+    return new Promise((resolve) => {
+      this.http.get<HamburgerModel[]>(this.apiUrl).subscribe(data => {
+        resolve(data);
+      });
+    });
+  }
+*/
   getHamburgers(): HamburgerModel[] {
-    console.log('Hamburgers:', this.hamburgers);
     return this.hamburgers;
   }
+
   getIngredients(): IngredientModel[] {
     return this.ingredients;
   }
+
   getBreads(): BreadModel[] {
     return this.breads;
   }
+
   getHamburgerById(id: number): HamburgerModel | undefined {
     return this.hamburgers.find(b => b.id === id);
   }
@@ -78,5 +89,7 @@ export class HamburgerService {
 
   deleteHamburger(id: number): void {
     this.hamburgers = this.hamburgers.filter(b => b.id !== id);
+    console.log('Hamburger deleted:', id);
+    console.log('Hamburgers:', this.hamburgers);
   }
 }

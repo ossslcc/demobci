@@ -34,6 +34,7 @@ export class HamburgerEditComponent {
   public hamburgerForm: FormGroup;
   public ingredientOptions: IngredientModel[] = [];
   public breadOptions: BreadModel[] = [];
+  
 
   constructor(
     public fb: FormBuilder,
@@ -49,6 +50,7 @@ export class HamburgerEditComponent {
     });
     this.breadOptions = this.hamburgerService.getBreads();
     this.ingredientOptions = this.hamburgerService.getIngredients();
+
   }
 
 
