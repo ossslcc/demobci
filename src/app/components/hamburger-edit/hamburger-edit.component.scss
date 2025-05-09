@@ -1,0 +1,13 @@
+:host {
+    display: block;
+    padding: 16px;
+    background-color: #f9f9f9;
+    max-height: calc(100vh - 64px);
+    overflow: auto;
+    mat-form-field {
+        width: 100%;
+    }
+    .inline {
+        display:inline-block;
+    }
+}

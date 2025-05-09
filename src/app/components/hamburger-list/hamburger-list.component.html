@@ -1,0 +1,34 @@
+<h1>Lista de Hamburguesas</h1>
+<button mat-flat-button (click)="editHamburger()">add</button>
+<table mat-table [dataSource]="hamburgers" class="mat-elevation-z8">
+<ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <td mat-cell *matCellDef="let burger">{{ burger.id }}</td>
+</ng-container>
+
+<ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef>Título</th>
+    <td mat-cell *matCellDef="let burger">{{ burger.title }}</td>
+</ng-container>
+
+<ng-container matColumnDef="availableFrom">
+    <th mat-header-cell *matHeaderCellDef>Disponible Desde</th>
+    <td mat-cell *matCellDef="let burger">{{ burger.availableFrom | date:'shortDate' }}</td>
+</ng-container>
+
+<ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef>Precio</th>
+    <td mat-cell *matCellDef="let burger">{{ burger.price }}</td>
+</ng-container>
+
+<ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+    <td mat-cell *matCellDef="let burger">
+    <button mat-button color="warn" (click)="editHamburger(burger.id)">Editar</button>
+    <button mat-button color="warn" (click)="deleteHamburger(burger.id)">Eliminar</button>
+    </td>
+</ng-container>
+
+<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
