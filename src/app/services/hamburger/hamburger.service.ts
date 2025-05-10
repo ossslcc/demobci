@@ -6,11 +6,9 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class HamburgerService {
-  private hamburgers: HamburgerModel[] = [];
   private ingredients: IngredientModel[] = [];
   private breads: BreadModel[] = [];
   private apiUrl = 'https://oscardemobci.free.beeceptor.com/hamburgers';
-  static getHamburgers: any;
 
   constructor(
     private http: HttpClient
@@ -20,6 +18,7 @@ export class HamburgerService {
 
   initData() {
     this.ingredients = [
+      { code: 'no_ingredients', label: 'Sin Ingredientes' },
       { code: 'tomato', label: 'Tomate' },
       { code: 'lettuce', label: 'Lechuga' },
       { code: 'onion', label: 'Cebolla' },
@@ -28,6 +27,7 @@ export class HamburgerService {
       { code: 'pickles', label: 'Pepinillos' },
     ];
     this.breads = [
+      { code: 'no_bread', label: 'Sin Pan' },
       { code: 'white', label: 'Pan Blanco' },
       { code: 'whole', label: 'Pan Integral' },
       { code: 'garlic', label: 'Pan de Ajo' },
@@ -39,12 +39,16 @@ export class HamburgerService {
     });
   }
 
-  getHamburgers(): HamburgerModel[] {
-    const data = localStorage.getItem('data');
-    if (data) {
-      this.hamburgers = JSON.parse(data);
-    }
-    return this.hamburgers;
+  getHamburgers(): Promise<HamburgerModel[]> {
+    return new Promise((resolve) => {
+      const checkStorage = setInterval(() => {
+        const data = localStorage.getItem('data');
+        if (data) {
+          resolve(JSON.parse(data));
+          clearInterval(checkStorage)
+        }
+      }, 200);
+    });
   }
 
   getIngredients(): IngredientModel[] {
@@ -56,22 +60,34 @@ export class HamburgerService {
   }
 
   getHamburgerById(id: number): HamburgerModel | undefined {
-    return this.hamburgers.find(b => b.id === id);
+    const data = localStorage.getItem('data');
+    const hamburgers = data ? JSON.parse(data) : [];
+    return hamburgers.find((b: { id: number; }) => b.id === id);
   }
 
   addHamburger(hamburger: HamburgerModel): void {
-    hamburger.id = this.hamburgers.length + 1;
-    this.hamburgers.push(hamburger);
+    const data = localStorage.getItem('data');
+    let hamburgers = data ? JSON.parse(data) : [];
+    hamburger.id = hamburgers.length + 1;
+    hamburgers.push(hamburger);
+    localStorage.setItem('data', JSON.stringify(hamburgers));
   }
 
   updateHamburger(updatedHamburger: HamburgerModel): void {
-    const index = this.hamburgers.findIndex(b => b.id === updatedHamburger.id);
+    const data = localStorage.getItem('data');
+    let hamburgers = data ? JSON.parse(data) : [];
+    
+    const index = hamburgers.findIndex((b: { id: number; }) => b.id === updatedHamburger.id);
     if (index !== -1) {
-      this.hamburgers[index] = updatedHamburger;
+      hamburgers[index] = updatedHamburger;
+      localStorage.setItem('data', JSON.stringify(hamburgers));
     }
   }
 
   deleteHamburger(id: number): void {
-    this.hamburgers = this.hamburgers.filter(b => b.id !== id);
+    const data = localStorage.getItem('data');
+    let hamburgers = data ? JSON.parse(data) : [];
+    hamburgers = hamburgers.filter((b: { id: number; }) => b.id !== id);
+    localStorage.setItem('data', JSON.stringify(hamburgers));
   }
 }

@@ -48,17 +48,17 @@ export class HamburgerListComponent {
       data: { id: id },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(async result => {
       if (result !== undefined) {
-        this.hamburgers = this.hamburgerService.getHamburgers();
+        this.hamburgers = await this.hamburgerService.getHamburgers();
         this.table.renderRows();
       }
     });
   }
 
-  deleteHamburger(id: number): void {
+  async deleteHamburger(id: number) {
     this.hamburgerService.deleteHamburger(id);
-    this.hamburgers = this.hamburgerService.getHamburgers();
+    this.hamburgers = await this.hamburgerService.getHamburgers();
     this.table.renderRows();
   }
 }

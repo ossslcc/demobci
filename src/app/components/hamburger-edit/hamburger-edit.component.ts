@@ -48,7 +48,7 @@ export class HamburgerEditComponent {
       'title': ['', Validators.required],
       'availableFrom': ['', Validators.required],
       'price': [0, Validators.compose([Validators.required, Validators.min(0)])],
-      'ingredients': [[]],
+      'ingredients': [[], Validators.required],
       'bread': ['', Validators.required],
     });
     this.breadOptions = this.hamburgerService.getBreads();
