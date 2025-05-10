@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,11 +7,12 @@ import { BreadModel, HamburgerModel, IngredientModel } from '@model/hamburger.mo
 import { HamburgerService } from '@service/hamburger/hamburger.service';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatCheckbox } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
-import { MatRadioButton } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-hamburger-edit',
@@ -24,7 +25,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatGridListModule,
     MatButtonModule,
     CommonModule,
-    MatFormFieldModule, MatInputModule, MatDatepickerModule
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatDatepickerModule
   ],
   templateUrl: './hamburger-edit.component.html',
   styleUrl: './hamburger-edit.component.scss',
@@ -34,8 +37,8 @@ export class HamburgerEditComponent {
   public hamburgerForm: FormGroup;
   public ingredientOptions: IngredientModel[] = [];
   public breadOptions: BreadModel[] = [];
+  readonly data = inject<any>(MAT_DIALOG_DATA);
   
-
   constructor(
     public fb: FormBuilder,
     public dialogRef: MatDialogRef<HamburgerEditComponent>,
@@ -50,26 +53,43 @@ export class HamburgerEditComponent {
     });
     this.breadOptions = this.hamburgerService.getBreads();
     this.ingredientOptions = this.hamburgerService.getIngredients();
-
+    this.loadHamburger();
   }
 
+  loadHamburger(): void {
+    if (this.data.id !== undefined) {
+      const hamburger = this.hamburgerService.getHamburgerById(this.data.id);
+      if (hamburger) {
+        this.hamburgerForm.patchValue({
+          title: hamburger.title,
+          availableFrom: hamburger.availableFrom,
+          price: hamburger.price,
+          ingredients: hamburger.ingredients,
+          bread: hamburger.bread
+        });
+      }
+    }
+  }
 
   save(): void {
     if (this.hamburgerForm.valid) {
       const newHamburger: HamburgerModel = {
-        id: 0,
+        id: this.data.id !== undefined ? this.data.id : 0,
         title: this.hamburgerForm.value.title,
         availableFrom: new Date(this.hamburgerForm.value.availableFrom),
         price: this.hamburgerForm.value.price,
-        ingredients: this.hamburgerForm.value.ingredients.map((code: string) => {
-          return this.ingredientOptions.find(ingredient => ingredient.code === code)?.label;
-        }).filter((label: string | undefined) => label !== undefined),
+        ingredients: this.hamburgerForm.value.ingredients,
         bread: this.hamburgerForm.value.bread
       };
-      this.hamburgerService.addHamburger(newHamburger);
+      if (this.data.id !== undefined) {
+        this.hamburgerService.updateHamburger(newHamburger);
+      } else {
+        this.hamburgerService.addHamburger(newHamburger);
+      }
       this.dialogRef.close(newHamburger);
     }
   }
+
   cancel(): void {
     this.dialogRef.close();
   }

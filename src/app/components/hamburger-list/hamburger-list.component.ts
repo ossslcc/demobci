@@ -33,8 +33,14 @@ export class HamburgerListComponent {
 
   readonly dialog = inject(MatDialog);
 
-  constructor(private hamburgerService: HamburgerService) {
-    this.hamburgers = this.hamburgerService.getHamburgers();
+  constructor(
+    private hamburgerService: HamburgerService
+  ) {
+    this.loadHamburgers();
+  }
+
+  async loadHamburgers() {
+    this.hamburgers = await this.hamburgerService.getHamburgers();
   }
 
   editHamburger(id?: number): void {
@@ -54,6 +60,5 @@ export class HamburgerListComponent {
     this.hamburgerService.deleteHamburger(id);
     this.hamburgers = this.hamburgerService.getHamburgers();
     this.table.renderRows();
-
   }
 }

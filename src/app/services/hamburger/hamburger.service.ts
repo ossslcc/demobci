@@ -1,7 +1,6 @@
-// src/app/services/hamburger.service.ts
 import { Injectable } from '@angular/core';
 import { BreadModel, HamburgerModel, IngredientModel } from '@model/hamburger.model';
-//import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,31 +9,16 @@ export class HamburgerService {
   private hamburgers: HamburgerModel[] = [];
   private ingredients: IngredientModel[] = [];
   private breads: BreadModel[] = [];
-  //private apiUrl = 'https://inscripciones.cl:4000/hamburgers';
+  private apiUrl = 'https://oscardemobci.free.beeceptor.com/hamburgers';
+  static getHamburgers: any;
 
   constructor(
-    //private http: HttpClient
+    private http: HttpClient
   ) {
-    this.hamburgers = [
-      {
-        id: 1, title: 'Cheeseburger', availableFrom: new Date('2023-01-01'),
-        price: 0,
-        ingredients: [],
-        bread: ''
-      },
-      {
-        id: 2, title: 'Veggie Burger', availableFrom: new Date('2023-02-01'),
-        price: 0,
-        ingredients: [],
-        bread: ''
-      },
-      {
-        id: 3, title: 'Chicken Burger', availableFrom: new Date('2023-03-01'),
-        price: 0,
-        ingredients: [],
-        bread: ''
-      },
-    ];
+    this.initData();
+  }
+
+  initData() {
     this.ingredients = [
       { code: 'tomato', label: 'Tomate' },
       { code: 'lettuce', label: 'Lechuga' },
@@ -49,17 +33,17 @@ export class HamburgerService {
       { code: 'garlic', label: 'Pan de Ajo' },
       { code: 'burger', label: 'Pan de Hamburguesa' },
     ];
-  }
-/*
-  getHamburgersFromServer(): Promise<any> {
-    return new Promise((resolve) => {
-      this.http.get<HamburgerModel[]>(this.apiUrl).subscribe(data => {
-        resolve(data);
-      });
+    
+    this.http.get<HamburgerModel[]>(this.apiUrl).subscribe(data => {
+      localStorage.setItem('data', JSON.stringify(data));
     });
   }
-*/
+
   getHamburgers(): HamburgerModel[] {
+    const data = localStorage.getItem('data');
+    if (data) {
+      this.hamburgers = JSON.parse(data);
+    }
     return this.hamburgers;
   }
 
@@ -76,7 +60,7 @@ export class HamburgerService {
   }
 
   addHamburger(hamburger: HamburgerModel): void {
-    hamburger.id = this.hamburgers.length + 1; // Simple ID generation
+    hamburger.id = this.hamburgers.length + 1;
     this.hamburgers.push(hamburger);
   }
 
@@ -89,7 +73,5 @@ export class HamburgerService {
 
   deleteHamburger(id: number): void {
     this.hamburgers = this.hamburgers.filter(b => b.id !== id);
-    console.log('Hamburger deleted:', id);
-    console.log('Hamburgers:', this.hamburgers);
   }
 }
